@@ -3,7 +3,6 @@ package pkg1;
 import java.util.Arrays;
 import java.util.List;
 
-// Main class for execution
 public class Main {
     public static void main(String[] args) {
         Grammar grammar = new Grammar();
