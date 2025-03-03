@@ -37,5 +37,8 @@ public class Main {
         dfa.printTransitions();
         Bonus dfaGraph = new Bonus();
         dfaGraph.drawGraph();
+
+
+
     }
 }
