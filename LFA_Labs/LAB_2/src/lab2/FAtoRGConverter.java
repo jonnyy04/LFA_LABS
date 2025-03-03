@@ -32,35 +32,29 @@ public class FAtoRGConverter {
 
     // Function to generate the regular grammar from the FA's transition function
     public static void generateRegularGrammar() {
-        // Iterate over all states
-        for (State state : State.values()) {
-            // Start the production rule for the current state
-            StringBuilder productionRule = new StringBuilder("S_" + state.name() + " -> ");
 
-            // For each character in the alphabet, check the transition
-            boolean firstTransition = true; // To handle the "|" separator
+        for (State state : State.values()) {
+               StringBuilder productionRule = new StringBuilder("S_" + state.name() + " -> ");
+
+                        boolean firstTransition = true; // To handle the "|" separator
 
             for (Map.Entry<Character, State> transition : transitionFunction.get(state).entrySet()) {
                 char symbol = transition.getKey();
                 State nextState = transition.getValue();
 
-                // If this is not the first transition, add a "|" separator
-                if (!firstTransition) {
+                                if (!firstTransition) {
                     productionRule.append(" | ");
                 }
                 firstTransition = false;
 
-                // Add the transition rule (symbol followed by the next state)
+
                 productionRule.append(symbol + " S_" + nextState.name());
             }
 
-            // Check if this state is a final state (in this case, q2 is the final state)
             if (state == State.q2) {
-                // Add epsilon production for the final state
                 productionRule.append(" | epsilon");
             }
 
-            // Print the production rule for the current state
             System.out.println(productionRule);
         }
     }
