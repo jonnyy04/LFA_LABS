@@ -176,12 +176,13 @@ The generateRegularGrammar() function generates a regular grammar based on the t
 
 For each transition in the state, the function appends the corresponding symbol and the next state in the format described above. It also handles the | separator between multiple possible transitions. Additionally, if the state is a final state (in this case, State.q2), it appends epsilon to the production rule, representing the possibility of the automaton accepting the string without consuming any more symbols.
 ## Results
+![img.png](img.png)
 
+![img_1.png](img_1.png)
 
 ## Conclusions
 
-In this lab, we explored the foundational concepts of formal languages, regular grammars, and finite automata. We implemented a Grammar class that generates random strings based on a context-free grammar and a FiniteAutomaton class that checks whether a string belongs to the language recognized by the automaton. By translating a grammar into a finite automaton, we bridged the gap between formal language theory and practical automata recognition. This work deepens our understanding of computational theory, laying a solid groundwork for more complex tasks in areas like compiler design and language processing.
-
+In conclusion, this lab work focused on understanding and implementing key concepts related to finite automata and formal grammars. Through the tasks, we explored the process of converting a nondeterministic finite automaton (NDFA) to a deterministic finite automaton (DFA), ensuring that we adhered to the determinism conditions of finite automata. Additionally, we examined the creation of regular grammar from a finite automaton, generating production rules to represent the same language in a formal grammar. By implementing and testing the core concepts such as epsilon closures, state transitions, and regular grammar generation, this lab provided practical experience in automata theory and its application to formal language processing. The skills gained here are foundational to understanding more complex computational models and are essential for further exploration into formal languages, compilers, and automata-based algorithms.
 ## References
 * Finite State Machine (Finite Automata)
 * https://www.youtube.com/watch?v=Qa6csfkK7_I

@@ -35,10 +35,6 @@ public class Main {
         FiniteAutomaton dfa = ndfa.convertToDFA();
         System.out.println("\nDFA Transitions:");
         dfa.printTransitions();
-        Bonus dfaGraph = new Bonus();
-        dfaGraph.drawGraph();
-
-
 
     }
 }

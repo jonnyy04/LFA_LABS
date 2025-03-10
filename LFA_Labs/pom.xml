@@ -27,7 +27,13 @@
             <version>2.0</version>
         </dependency>
 
-
+        <dependency>
+            <groupId>processing</groupId>
+            <artifactId>core</artifactId>
+            <version>4.3</version> <!-- You can use 4.3 or your Processing version -->
+            <scope>system</scope>
+            <systemPath>${project.basedir}/libs/core.jar</systemPath> <!-- Update with your actual path -->
+        </dependency>
 
     </dependencies>
 
