@@ -36,7 +36,7 @@ public class FAtoRGConverter {
         for (State state : State.values()) {
                StringBuilder productionRule = new StringBuilder("S_" + state.name() + " -> ");
 
-                        boolean firstTransition = true; // To handle the "|" separator
+                        boolean firstTransition = true;
 
             for (Map.Entry<Character, State> transition : transitionFunction.get(state).entrySet()) {
                 char symbol = transition.getKey();

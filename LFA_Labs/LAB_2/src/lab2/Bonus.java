@@ -1,57 +1,105 @@
-package lab2;
+import processing.core.*;
+import java.util.*;
 
-import org.graphstream.graph.*;
-import org.graphstream.graph.implementations.*;
+public class Bonus extends PApplet {
 
-public class Bonus {
-    public void drawGraph() {
-        // Configurăm UI-ul să folosească Swing pentru vizualizare
-        System.setProperty("org.graphstream.ui", "swing");
-        System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
+    // Clasa pentru reprezentarea unui nod (stare) din DFA
+    class State {
+        String name;
+        float x, y;
+        boolean isAccepting;
 
-        // Creăm un graf orientat
-        Graph graph = new SingleGraph("DFA");
+        State(String name, float x, float y, boolean isAccepting) {
+            this.name = name;
+            this.x = x;
+            this.y = y;
+            this.isAccepting = isAccepting;
+        }
+    }
 
-        // Adăugăm stările (noduri)
-        String[] states = {"q0", "q0q1", "q1", "q2", "q0q1q2"};
-        for (String state : states) {
-            Node node = graph.addNode(state);
-            node.setAttribute("ui.label", state); // Adaugă etichetă
-            node.setAttribute("ui.style", "text-alignment: center; text-size: 20; shape: circle; size: 50px;");
+    HashMap<String, State> states = new HashMap<>(); // Lista de stări
+    HashMap<String, HashMap<Character, String>> transitions = new HashMap<>(); // Tranzițiile între stări
+
+    public void settings() {
+        size(800, 600);
+    }
+    public void setup() {
+
+        // Inițializarea stărilor
+        states.put("q0", new State("q0", 100, 100, false));
+        states.put("q1", new State("q1", 400, 150, false));
+        states.put("q2", new State("q2", 600, 300, false));
+        states.put("q1q0", new State("{q1, q0}", 100, 400, false));
+        states.put("q1q2q0", new State("{q1, q2, q0}", 500, 450, false));
+
+        // Inițializarea tranzițiilor
+        transitions.put("q0", new HashMap<>(Map.of('a', "q1q0")));
+        transitions.put("q1", new HashMap<>(Map.of('a', "q2", 'b', "q1", 'c', "q0")));
+        transitions.put("q2", new HashMap<>(Map.of('a', "q2")));
+        transitions.put("q1q0", new HashMap<>(Map.of('a', "q1q2q0", 'b', "q1", 'c', "q0")));
+        transitions.put("q1q2q0", new HashMap<>(Map.of('a', "q1q2q0", 'b', "q1", 'c', "q0")));
+    }
+
+    public void draw() {
+        background(30, 30, 50); // Setează fundalul
+
+        // Desenează stările
+        for (State state : states.values()) {
+            fill(state.isAccepting ? color(0, 200, 0) : color(100, 150, 255)); // Culoare în funcție de tipul stării
+            stroke(255);
+            ellipse(state.x, state.y, 60, 60);
+            fill(255);
+            textAlign(CENTER, CENTER);
+            textSize(16);
+            text(state.name, state.x, state.y);
         }
 
-        // Stare inițială (q0)
-        graph.getNode("q0").setAttribute("ui.style", "fill-color: yellow; text-alignment: center; text-size: 20; shape: circle; size: 50px;");
+        stroke(255);
+        // Desenează tranzițiile între stări
+        for (String from : transitions.keySet()) {
+            for (Map.Entry<Character, String> entry : transitions.get(from).entrySet()) {
+                State s1 = states.get(from);
+                State s2 = states.get(entry.getValue());
+                if (s1 != null && s2 != null) {
+                    if (s1 == s2) {
+                        drawSelfLoop(s1.x, s1.y, entry.getKey()); // Desenează self-loop
+                    } else {
+                        drawArrow(s1.x, s1.y, s2.x, s2.y, entry.getKey()); // Desenează o tranziție normală
+                    }
+                }
+            }
+        }
+    }
 
-        // Stări finale
-        graph.getNode("q2").setAttribute("ui.style", "fill-color: green; shape: circle; size: 50px; stroke-mode: plain; stroke-color: black;");
-        graph.getNode("q0q1q2").setAttribute("ui.style", "fill-color: green; shape: circle; size: 50px; stroke-mode: plain; stroke-color: black;");
+    // Funcție pentru desenarea unei săgeți între două stări
+    void drawArrow(float x1, float y1, float x2, float y2, char label) {
+        float angle = atan2(y2 - y1, x2 - x1);
+        float len = dist(x1, y1, x2, y2) - 30; // Ajustează capătul săgeții
+        float newX = x1 + cos(angle) * len;
+        float newY = y1 + sin(angle) * len;
 
-        // Adăugăm tranzițiile (muchii)
-        graph.addEdge("q0-q0q1", "q0", "q0q1", true).setAttribute("ui.label", "a");
-        graph.addEdge("q0q1-q0q1q2", "q0q1", "q0q1q2", true).setAttribute("ui.label", "a");
-        graph.addEdge("q0q1-q1", "q0q1", "q1", true).setAttribute("ui.label", "b");
-        graph.addEdge("q0q1-q0", "q0q1", "q0", true).setAttribute("ui.label", "c");
-        graph.addEdge("q1-q2", "q1", "q2", true).setAttribute("ui.label", "a");
-        graph.addEdge("q1-loop", "q1", "q1", true).setAttribute("ui.label", "b");
-        graph.getEdge("q1-loop").setAttribute("ui.class", "loop");
-        graph.addEdge("q1-q0", "q1", "q0", true).setAttribute("ui.label", "c");
-        graph.addEdge("q2-loop", "q2", "q2", true).setAttribute("ui.label", "a");
-        graph.getEdge("q2-loop").setAttribute("ui.class", "loop");
-        graph.addEdge("q0q1q2-loop", "q0q1q2", "q0q1q2", true).setAttribute("ui.label", "a");
-        graph.getEdge("q0q1q2-loop").setAttribute("ui.class", "loop");
-        graph.addEdge("q0q1q2-q1", "q0q1q2", "q1", true).setAttribute("ui.label", "b");
-        graph.addEdge("q0q1q2-q0", "q0q1q2", "q0", true).setAttribute("ui.label", "c");
+        line(x1, y1, newX, newY);
+        fill(255);
+        text(label, (x1 + newX) / 2, (y1 + newY) / 2);
 
-        // Stilizare CSS
-        graph.setAttribute("ui.stylesheet",
-                "node { fill-color: lightblue; size: 50px; text-size: 20; text-alignment: center; shape: circle; }" +
-                        "edge { fill-color: gray; text-size: 14; }" +
-                        "edge.loop { shape: cubic-curve; size: 3px; fill-color: red; arrow-shape: none; }" +
-                        "edge.loop .edge-label { text-alignment: above; text-offset: 0px, -15px; }"
-        );
+        pushMatrix();
+        translate(newX, newY);
+        rotate(angle);
+        line(-5, -5, 0, 0); // Vârful săgeții
+        line(-5, 5, 0, 0);
+        popMatrix();
+    }
 
-        // Afișăm graful
-        graph.display();
+    // Funcție pentru desenarea self-loop-urilor
+    void drawSelfLoop(float x, float y, char label) {
+        float loopRadius = 30;
+        noFill();
+        arc(x, y - 35, loopRadius * 2, loopRadius, -3 * PI / 4, -PI / 10); // Arc pentru loop
+        fill(255);
+        text(label, x, y - 50); // Eticheta tranziției
+    }
+
+    public static void main(String[] args) {
+        PApplet.main("Bonus");
     }
 }
