@@ -67,65 +67,78 @@ public String determineGrammarType() {
 ```
 The determineGrammarType() function analyzes a set of grammar rules and classifies the grammar into one of four types based on the Chomsky Hierarchy: Regular (Type 3), Context-Free (Type 2), Context-Sensitive (Type 1), or Recursively Enumerable (Type 0). It checks for specific conditions for each type, such as the form of the rules and the length of the left and right sides of the production. The function returns the most specific type that matches the grammar rules, starting from Regular and moving up to Recursively Enumerable if none of the more specific conditions are met.
 ```java
-public FiniteAutomaton convertToDFA() {
-        Set<Set<String>> dfaStates = new HashSet<>();
-        Queue<Set<String>> queue = new LinkedList<>();
-        Map<Set<String>, String> stateNames = new HashMap<>();
+Set<Set<String>> dfaStates = new HashSet<>();
+Queue<Set<String>> queue = new LinkedList<>();
+Map<Set<String>, String> stateNames = new HashMap<>();
 
-        Set<String> startSet = epsilonClosure(Set.of(startState));
-        dfaStates.add(startSet);
-        queue.add(startSet);
-        stateNames.put(startSet, setToString(startSet));
+Set<String> startSet = epsilonClosure(Set.of(startState));
+dfaStates.add(startSet);
+queue.add(startSet);
+stateNames.put(startSet, setToString(startSet));
 
-        Map<String, Map<Character, String>> dfaTransitions = new HashMap<>();
+Map<String, Map<Character, String>> dfaTransitions = new HashMap<>();
 
-        while (!queue.isEmpty()) {
-            Set<String> currentState = queue.poll();
-            String currentStateName = stateNames.get(currentState);
-            dfaTransitions.putIfAbsent(currentStateName, new HashMap<>());
+```
+Here, dfaStates stores all DFA states, which are represented as sets of NFA states. A queue, queue, is used for processing each newly discovered state. The stateNames map assigns a unique name to each DFA state (which is actually a set of NFA states). The startSet is initialized as the ε-closure of the start state, meaning all states reachable from the initial state via epsilon transitions. This set is then added to the DFA state list and queued for processing. The dfaTransitions map will later store the transitions between DFA states.
 
-            for (char symbol : alphabet) {
-                Set<String> newState = new HashSet<>();
-                for (String state : currentState) {
-                    if (transitions.containsKey(state) && transitions.get(state).containsKey(symbol)) {
-                        newState.addAll(transitions.get(state).get(symbol));
-                    }
-                }
-                newState = epsilonClosure(newState);
 
-                if (!dfaStates.contains(newState)) {
-                    dfaStates.add(newState);
-                    queue.add(newState);
-                    stateNames.put(newState, setToString(newState));
-                }
-                String newStateName = stateNames.get(newState);
-                dfaTransitions.get(currentStateName).put(symbol, newStateName);
+```java
+while (!queue.isEmpty()) {
+    Set<String> currentState = queue.poll();
+    String currentStateName = stateNames.get(currentState);
+    dfaTransitions.putIfAbsent(currentStateName, new HashMap<>());
+
+    for (char symbol : alphabet) {
+        Set<String> newState = new HashSet<>();
+        for (String state : currentState) {
+            if (transitions.containsKey(state) && transitions.get(state).containsKey(symbol)) {
+                newState.addAll(transitions.get(state).get(symbol));
             }
         }
+        newState = epsilonClosure(newState);
 
-        // Creăm mulțimea de stări finale pentru DFA
-        Set<String> dfaFinalStates = new HashSet<>();
-        for (Set<String> state : dfaStates) {
-            for (String s : state) {
-                if (finalStates.contains(s)) {
-                    dfaFinalStates.add(stateNames.get(state));
-                    break;
-                }
-            }
+        if (!dfaStates.contains(newState)) {
+            dfaStates.add(newState);
+            queue.add(newState);
+            stateNames.put(newState, setToString(newState));
         }
-
-        // Creăm noul DFA
-        FiniteAutomaton dfa = new FiniteAutomaton(new HashSet<>(stateNames.values()), alphabet, setToString(startSet), dfaFinalStates);
-
-        // Adăugăm efectiv tranzițiile în noul DFA
-        for (String state : dfaTransitions.keySet()) {
-            for (char symbol : dfaTransitions.get(state).keySet()) {
-                dfa.addTransition(state, symbol, dfaTransitions.get(state).get(symbol));
-            }
-        }
-
-        return dfa;
+        String newStateName = stateNames.get(newState);
+        dfaTransitions.get(currentStateName).put(symbol, newStateName);
     }
+}
+
+```
+The loop continues as long as there are unprocessed states in the queue. Each state is dequeued and its corresponding name is retrieved. The algorithm then iterates over each symbol in the alphabet.
+
+For each symbol, it finds all possible transitions from the current set of NFA states. It does this by checking each state in currentState and collecting all states that can be reached through the current symbol. Then, it applies the ε-closure function to include any states reachable through epsilon transitions.
+
+If the newly generated state set has not been seen before, it is added to dfaStates, queued for processing, and assigned a unique name. Finally, a transition is recorded in dfaTransitions, linking the current DFA state to the new state.
+
+
+```java
+// Create the set of final states for the DFA
+Set<String> dfaFinalStates = new HashSet<>();
+for (Set<String> state : dfaStates) {
+    for (String s : state) {
+        if (finalStates.contains(s)) {
+            dfaFinalStates.add(stateNames.get(state));
+            break;
+        }
+    }
+}
+
+// Create the new DFA
+FiniteAutomaton dfa = new FiniteAutomaton(new HashSet<>(stateNames.values()), alphabet, setToString(startSet), dfaFinalStates);
+
+// Add the transitions to the new DFA
+for (String state : dfaTransitions.keySet()) {
+    for (char symbol : dfaTransitions.get(state).keySet()) {
+        dfa.addTransition(state, symbol, dfaTransitions.get(state).get(symbol));
+    }
+}
+
+return dfa;
+
 ```
 The convertToDFA() function converts a given Nondeterministic Finite Automaton (NDFA) to a Deterministic Finite Automaton (DFA). It does this by using the powerset construction method, where the states of the DFA are represented as sets of NDFA states. The process starts by calculating the epsilon-closure of the NDFA's start state, then iteratively explores all possible transitions for each state set. For each state set and input symbol, it computes the new state and adds it to the DFA if it hasn't been encountered before. The function also handles the creation of transitions between states and final states for the DFA. The result is a DFA with a defined set of states, transitions, and final states, which recognizes the same language as the NDFA.
 
@@ -179,6 +192,8 @@ For each transition in the state, the function appends the corresponding symbol 
 ![img.png](img.png)
 
 ![img_1.png](img_1.png)
+
+![img_2.png](img_2.png)
 
 ## Conclusions
 
