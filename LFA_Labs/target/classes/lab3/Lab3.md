@@ -156,6 +156,10 @@ public class Lexer {
     }
 }
 ```
+
+
+This code defines a Lexer that tokenizes an input string based on predefined patterns. It iterates through the input, matching substrings against different token types from TokenType using regular expressions. If a match is found, a new Token object is created (excluding whitespace tokens), and the matched part is removed from the input. If no match is found, an error is thrown. The main method demonstrates its usage by tokenizing a script-like input with commands for graphics rendering.
+
 ### **Key Points:**
 - **Regex matching** is used to extract tokens.
 - **Whitespace is ignored** to prevent unnecessary tokens.
@@ -199,14 +203,7 @@ triangle : 10 10 50 50 90 20 yellow
 (NUMBER, "50")
 ...
 ```
----
 
-## Future Improvements
-- **Support for RGB colors** (e.g., `rgb(255, 0, 0)` instead of named colors)
-- **Support for text labels** (e.g., `text : "Hello" 100 200 blue`)
-- **Parsing & Execution** (Processing or Java Graphics integration)
-
----
 
 ## Conclusion
 This lexer successfully tokenizes DrawScript DSL, preparing it for parsing and execution. The design is modular, allowing for easy expansion and integration with a graphics engine. Future enhancements could include a parser and execution engine to bring the drawings to life! The flexibility of this approach makes it suitable for other graphical or domain-specific applications, demonstrating the power of lexical analysis in structured text processing.
