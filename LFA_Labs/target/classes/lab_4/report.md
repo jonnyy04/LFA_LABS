@@ -1,4 +1,4 @@
-# Regex-Based String Generator
+# Regular expressions
 
 ### Course: Formal Languages & Finite Automata
 ### Author: Vornicescu Ion
@@ -19,7 +19,7 @@ Regular expressions (regex) are a fundamental concept in formal languages and fi
 ## Implementation Description
 
 ### **1. Regex Processing Logic**
-The `RegexGenerator` class processes regex patterns by iterating through each character and applying the corresponding operation based on regex rules.
+The RegexGenerator class processes regex patterns by iterating through each character and applying the corresponding operation based on regex rules.
 
 ```java
 package lab_3;
@@ -92,6 +92,9 @@ public static void main(String[] args) {
 }
 ```
 
+This code defines a RegexGenerator class that creates strings matching a given regex pattern through randomization. The generateFromRegex method cleans the input regex by removing any whitespace before delegating processing to the processRegex method. As the regex is iterated character by character, the code detects special regex constructs such as grouping (using parentheses) and repetition operators like {}, ?, *, and +, applying random decisions to determine the output. Essentially, for each construct, the code chooses one of the possible options or determines the number of repetitions, and appends the corresponding characters to the result, thereby generating a string that fits the original pattern.
+
+
 ---
 
 ## Example Execution
@@ -134,4 +137,5 @@ This lab successfully demonstrates how to generate strings from regular expressi
 ## References
 * Regular Expressions - Formal Language Theory
 * Finite State Machines & Regular Expressions
+* LFPC Guide
 
