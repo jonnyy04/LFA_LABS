@@ -33,41 +33,55 @@ public class RegexGenerator {
         regex = regex.replaceAll("\\s", ""); // Remove spaces
         return processRegex(regex);
     }
-
-    private static String processRegex(String regex) {
-        StringBuilder result = new StringBuilder();
-
-        for (int i = 0; i < regex.length(); i++) {
-            char c = regex.charAt(i);
-            if (c == '(') {
-                int end = regex.indexOf(')', i);
-                String[] options = regex.substring(i + 1, end).split("\\|");
-                result.append(options[random.nextInt(options.length)]);
-                i = end;
-            } else if (c == '{') {
-                int end = regex.indexOf('}', i);
-                String[] nums = regex.substring(i + 1, end).split(",");
-                int min = Integer.parseInt(nums[0]);
-                int max = nums.length > 1 ? Integer.parseInt(nums[1]) : min;
-                int repeat = min + random.nextInt(max - min + 1);
-                result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat - 1));
-                i = end;
-            } else if (c == '?') {
-                if (random.nextBoolean()) result.append(result.charAt(result.length() - 1));
-            } else if (c == '*') {
-                int repeat = random.nextInt(6);
-                result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat));
-            } else if (c == '+') {
-                int repeat = 1 + random.nextInt(5);
-                result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat - 1));
-            } else {
-                result.append(c);
-            }
-        }
-        return result.toString();
-    }
 }
+
 ```
+
+The Class Setup and Utility Methods, where the RegexGenerator class is defined along with a Random instance for generating random values. The generateFromRegex method is responsible for removing spaces from the input regex and calling processRegex to generate a corresponding random string.
+
+```java
+private static String processRegex(String regex) {
+    StringBuilder result = new StringBuilder();
+
+    for (int i = 0; i < regex.length(); i++) {
+        char c = regex.charAt(i);
+
+```
+
+The second part is the Core Processing Logic, where the processRegex method is defined. This method iterates through each character of the regex using a loop and constructs the final string using a StringBuilder.
+
+```java
+        if (c == '(') {
+            int end = regex.indexOf(')', i);
+            String[] options = regex.substring(i + 1, end).split("\\|");
+            result.append(options[random.nextInt(options.length)]);
+            i = end;
+        } else if (c == '{') {
+            int end = regex.indexOf('}', i);
+            String[] nums = regex.substring(i + 1, end).split(",");
+            int min = Integer.parseInt(nums[0]);
+            int max = nums.length > 1 ? Integer.parseInt(nums[1]) : min;
+            int repeat = min + random.nextInt(max - min + 1);
+            result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat - 1));
+            i = end;
+        } else if (c == '?') {
+            if (random.nextBoolean()) result.append(result.charAt(result.length() - 1));
+        } else if (c == '*') {
+            int repeat = random.nextInt(6);
+            result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat));
+        } else if (c == '+') {
+            int repeat = 1 + random.nextInt(5);
+            result.append(String.valueOf(result.charAt(result.length() - 1)).repeat(repeat - 1));
+        } else {
+            result.append(c);
+        }
+    }
+    return result.toString();
+}
+
+```
+This part is Handling Different Regex Patterns, where specific regex symbols are processed. If the character is (), it randomly selects an option from the given choices. If {min,max} is encountered, it determines a random repetition count within the specified range and repeats the previous character accordingly. The ? operator decides randomly whether to include the previous character, while * repeats it between 0 and 5 times, and + ensures at least one repetition, up to 5 times. If the character does not match any regex operator, it is simply appended to the result. Finally, the generated string is returned. This structure ensures efficient processing and randomness while interpreting the simplified regex
+
 
 ### **2. Testing the Generator**
 The `main` method generates strings based on different regex patterns to validate the correctness of the implementation.
@@ -93,7 +107,6 @@ public static void main(String[] args) {
 ```
 
 This code defines a RegexGenerator class that creates strings matching a given regex pattern through randomization. The generateFromRegex method cleans the input regex by removing any whitespace before delegating processing to the processRegex method. As the regex is iterated character by character, the code detects special regex constructs such as grouping (using parentheses) and repetition operators like {}, ?, *, and +, applying random decisions to determine the output. Essentially, for each construct, the code chooses one of the possible options or determines the number of repetitions, and appends the corresponding characters to the result, thereby generating a string that fits the original pattern.
-
 
 ---
 
